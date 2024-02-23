@@ -6,12 +6,6 @@ import styles from './styles.module.css';
 const modalRoot = document.querySelector('#modal-root');
 
 export const Modal = ({ onClose, infoModal }) => {
-  const handleKeyDown = e => {
-    if (e.code === 'Escape') {
-      onClose();
-    }
-  };
-
   const handleBackdropClick = e => {
     if (e.currentTarget === e.target) {
       onClose();
@@ -19,12 +13,17 @@ export const Modal = ({ onClose, infoModal }) => {
   };
 
   useEffect(() => {
+    const handleKeyDown = e => {
+      if (e.code === 'Escape') {
+        onClose();
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [onClose]);
 
   return createPortal(
     <div className={styles.overlay} onClick={handleBackdropClick}>

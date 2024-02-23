@@ -21,13 +21,23 @@ export const PhotoInfo = ({ value }) => {
     if (!value) {
       return;
     }
-    requestPhotos(value, page);
-    scrollToBottom();
-  }, [value, page]);
+
+    setStatus(FETCH_STATUS.pending);
+    updateState();
+    requestPhotos(value, 1);
+  }, [value]);
+
+  useEffect(() => {
+    if (page > 1) {
+      setStatus(FETCH_STATUS.loading);
+      requestPhotos(value, page);
+      scrollToBottom();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   const requestPhotos = async (value, page) => {
     try {
-      setStatus(FETCH_STATUS.pending);
       const photos = await fetchPhotos(value, page);
       if (photos.hits.length === 0) {
         throw new Error(`${value} nothing to display`);
@@ -43,6 +53,11 @@ export const PhotoInfo = ({ value }) => {
 
   const handleButtonClick = () => {
     setPage(prevPage => prevPage + 1);
+  };
+
+  const updateState = () => {
+    setPhotos([]);
+    setPage(1);
   };
 
   if (status === FETCH_STATUS.idle) {
@@ -64,10 +79,15 @@ export const PhotoInfo = ({ value }) => {
     return <div className={styles.wrapper}>{error.message}</div>;
   }
 
-  if (status === FETCH_STATUS.resolved) {
+  if (status === FETCH_STATUS.resolved || status === FETCH_STATUS.loading) {
     return (
       <>
         <ImageGallery photos={photos} />
+        {status === FETCH_STATUS.loading && (
+          <div className={styles.wrapper}>
+            <Loader />
+          </div>
+        )}
         <div className={styles.button}>
           {isShowButton > 0 && (
             <Button
