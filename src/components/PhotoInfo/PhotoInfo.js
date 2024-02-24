@@ -27,15 +27,6 @@ export const PhotoInfo = ({ value }) => {
     requestPhotos(value, 1);
   }, [value]);
 
-  useEffect(() => {
-    if (page > 1) {
-      setStatus(FETCH_STATUS.loading);
-      requestPhotos(value, page);
-      scrollToBottom();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
-
   const requestPhotos = async (value, page) => {
     try {
       const photos = await fetchPhotos(value, page);
@@ -53,6 +44,9 @@ export const PhotoInfo = ({ value }) => {
 
   const handleButtonClick = () => {
     setPage(prevPage => prevPage + 1);
+    setStatus(FETCH_STATUS.loading);
+    requestPhotos(value, page + 1);
+    scrollToBottom();
   };
 
   const updateState = () => {
