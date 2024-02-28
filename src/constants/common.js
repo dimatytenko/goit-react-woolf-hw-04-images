@@ -3,5 +3,4 @@ export const FETCH_STATUS = {
   pending: 'pending',
   resolved: 'resolved',
   rejected: 'rejected',
-  loading: 'loading',
 };
